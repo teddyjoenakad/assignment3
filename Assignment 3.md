@@ -1,9 +1,12 @@
+# Creating a new user that replaces the root user and can access the server via SSH
 ## Step 1:
 You want to create a new user as bash login by running the following command:
 ```bash
 useradd -ms /bin/bash <username>
 ```
 Type whatever name you want to name your user in the username section.
+The `-m` option stands for "create home directory." When used, this option instructs `useradd` to create the user's home directory if it doesn't already exist.
+The `-s /bin/bash` option sets the user's login shell to Bash. The `bash` shell is commonly used as the default shell for users.
 
 ## Step 2:
 To add a password to the user you just created you must run the following command:
@@ -48,3 +51,17 @@ Then look for the line `PermitRootLogin yes` and change yes, to no. `then press 
 ```bash
 sudo systemctl restart ssh.service
 ```
+
+
+# Making a sample website using nginx
+
+## Step 1:
+First update the package list:
+```bash
+sudo apt update
+```
+Then install nginx:
+```bash
+sudo apt install nginx
+```
+
