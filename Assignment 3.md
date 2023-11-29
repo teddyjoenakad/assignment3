@@ -58,6 +58,8 @@ Now log out and try signing in with root. You should get an error that looks lik
 root@146.190.162.85: Permission denied (publickey).
 ```
 
+
+
 # Making a sample website using nginx
 
 ## Step 1:
@@ -86,6 +88,11 @@ curl 146.190.162.85
 ```
 ## Step 2:
 Create a new `my-site` directory in `/var/www` and then create an `index.html` with this script in it:
+```bash
+sudo mkdir my-site
+cd my-site
+sudo vim index.html
+```
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -111,9 +118,12 @@ Create a new `my-site` directory in `/var/www` and then create an `index.html` w
 </body>
 </html>
 ```
-
+Then `:wq` to save and quit
 ## Step 3:
 Now you want to create a new file `my-site.conf` in `/etc/nginx/sites-available` and paste the following nginx config into it:
+```bash
+sudo vim my-site.conf
+```
 ```
 server {
 	listen 80;
@@ -132,5 +142,42 @@ server {
 	}
 }
 ```
-
+Then `:wq`
 ## Step 4:
+Create a symbolic link for the `/etc/nginx/sites-available/my-site.conf` to `/etc/nginx/sites-enabled`:
+```bash
+sudo ln -s /etc/nginx/sites-available/my-site.conf /etc/nginx/sites-enabled/
+```
+The `-s` option stands for "symbolic" or "soft" link. This option is used to create a symbolic link rather than a hard link.
+
+NOTICE: Remove the default file before proceeding:
+```bash
+sudo rm default
+```
+
+## Step 5:
+When you have a symbolic link in sites-enabled run the following command:
+```bash
+sudo nginx -t
+```
+this tests your nginx configurations.
+
+## Step 6:
+If you don't see any errors restart the nginx service:
+```bash
+sudo systemctl restart nginx
+```
+
+## Step 7:
+Check the IP address by typing:
+```bash
+ip addr
+```
+and finding the address starting with `146.` in this case it is `146.190.162.85` 
+
+now curl that IP address and you will see the content of the `my-site` file:
+```bash
+curl 146.190.162.85
+```
+
+You can also copy that IP address on the browser to see your webpage.
