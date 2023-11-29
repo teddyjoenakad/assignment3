@@ -47,11 +47,16 @@ Now edit ssh configuration so that the root user can no longer connect to the se
 ```bash
 sudo vim /etc/ssh/sshd_config
 ```
+
 Then look for the line `PermitRootLogin yes` and change yes, to no. `then press :wq` to save the file. Save the file and restart the ssh service: 
 ```bash
 sudo systemctl restart ssh.service
 ```
 
+Now log out and try signing in with root. You should get an error that looks like this:
+```bash
+root@146.190.162.85: Permission denied (publickey).
+```
 
 # Making a sample website using nginx
 
@@ -60,8 +65,72 @@ First update the package list:
 ```bash
 sudo apt update
 ```
+
 Then install nginx:
 ```bash
 sudo apt install nginx
 ```
 
+Now you will have nginx enabled if you type:
+```bash
+sudo systemctl status nginx
+```
+
+And a new root document directory will be defined in the `/var/www/html` directory. To see the ip address, type in 
+```bash
+ip addr
+```
+and find the address 146.190.162.85. You can curl this to access the document:
+```bash
+curl 146.190.162.85
+```
+## Step 2:
+Create a new `my-site` directory in `/var/www` and then create an `index.html` with this script in it:
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2420</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Hello, World</h1>
+</body>
+</html>
+```
+
+## Step 3:
+Now you want to create a new file `my-site.conf` in `/etc/nginx/sites-available` and paste the following nginx config into it:
+```
+server {
+	listen 80;
+	listen [::]:80;
+	
+	root /var/www/my-site;
+	
+	index index.html;
+	
+	server_name _;
+	
+	location / {
+		# First attempt to serve request as file, then
+		# as directory, then fall back to displaying a 404.
+		try_files $uri $uri/ =404;
+	}
+}
+```
+
+## Step 4:
